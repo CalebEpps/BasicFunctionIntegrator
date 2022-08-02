@@ -4,6 +4,7 @@ from math import *
 class Integral:
 
     def __init__(self, polynomial=" ", toSum=" ", exp=1, N=1000, a=0, b=1, coeff=1):
+
         self.polynomial = polynomial
         self.exp = exp
         self.toSum = toSum
@@ -15,6 +16,7 @@ class Integral:
         if toSum == " " and polynomial == " ":
             self.getExpression()
 
+    # Integrates a polynomial by separating terms and calculating integrals of each one before adding them together.
     def integratePolynomial(self):
         terms = self.split(self.polynomial)
         result = 0
@@ -43,8 +45,6 @@ class Integral:
                 result += int(i) * self.b
 
         print("The definite integral evaluates to: ", "%.4f" % result)
-
-
 
     def getExpression(self):
 
@@ -88,7 +88,7 @@ class Integral:
     # integrate(5x^2) + integrate(3x).. etc. then add them together
     def integrate(self):
         value = 0
-        # Temporary coefficient calculation, will rewrite to make better
+        # Formula based on Trapezoidal Method for Integral Calculation
         if self.coeff == 1:
             for i in range(1, self.N + 1):
                 value += self.f(self.a + ((i - (1 / 2)) * ((self.b - self.a) / self.N)))
@@ -114,19 +114,24 @@ class Integral:
 # Keeps Program Running
 toQuit = "y"
 while toQuit == "y":
-    print("Welcome to Sing's simple integration calculation. Please note that no coefficients or exponents are"
-          " allowed for sin(x) or cos(x) just yet.")
+    print("\nSING'S SIMPLE DEFINITE INTEGRAL CALCULATOR")
+    print("Please note that no coefficients or exponents are allowed on sin(x) or cos(x) just yet.")
+    print("Example Expression: 2x^4 + 5x^3 + 4x^2 + 7x + 8 + sin(x)")
+    print("Example Expression: sin(x) + 5")
     try:
-        expression = str(input("Please enter your expression: "))
+        expression = str(input("\nPlease enter your expression: "))
 
         a = int(input("Please enter your lower bound: "))
         b = int(input("Please enter your upper bound: "))
         N = int(input("Please enter your accuracy level (Iterations): "))
 
-        integral = Integral(polynomial=expression, a = a, b = b, N = N)
+        integral = Integral(polynomial=expression, a=a, b=b, N=N)
         integral.integratePolynomial()
+
+        print("\n")
 
     except:
         print("There was an error with your input. Please try again.")
+        print("\n")
 
     toQuit = str(input("Would you like to perform another calculation? (Type y to continue, anything else to quit): "))
