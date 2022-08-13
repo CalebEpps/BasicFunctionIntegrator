@@ -1,3 +1,4 @@
+import re
 from math import *
 
 
@@ -18,33 +19,64 @@ class Integral:
 
     # Integrates a polynomial by separating terms and calculating integrals of each one before adding them together.
     def integratePolynomial(self):
-        terms = self.split(self.polynomial)
-        result = 0
+        # Remove Spaces
+        terms = self.polynomial.replace(" ", "")
+
+        # Define Necessary Lists
+        signs = []
+        coeff = []
+        exp = []
+
+        # Regex to get signs
         for i in terms:
+            if re.match("[+\-*]", i):
+                signs.append(i)
+
+        # Replace minus signs with 'plus minus'
+        terms = terms.replace('-', "+-")
+
+        # Finally split poly by plus sign
+        polySplit = terms.split("+")
+
+        # loop to gather all coefficients + exponents
+        for i in range(len(polySplit)):
+            try:
+                coeff.append(int(polySplit[i].split('x')[0].strip()))
+            except:
+                # Uses error to determine there's no coefficient
+                coeff.append(1)
+            try:
+                exp.append(int(polySplit[i].split('^')[1].strip()))
+            except:
+                # Uses error to determine there's no exponent
+                if 'x' in polySplit[i]:
+                    exp.append(1)
+                else:
+                    exp.append(0)
+
+        # Create 2D list of coeffs and exps
+        polyMatrix = [list(i) for i in zip(coeff, exp)]
+
+        # Calculate Integral
+        result = 0
+
+        print(polyMatrix)
+        print("Terms Length: ", (len(polyMatrix)))
+
+        for i in range(len(polyMatrix)):
+            print("Exponent: ", exp[i])
+            print("Coefficient: ", coeff[i])
             # Accounts for sin(x) and cos(x)
-            if i.strip() == "sin(x)" or i.strip() == "cos(x)":
-                temp = Integral(toSum=i.strip(), a=a, b=b, N=N)
+            if exp[i] > 0:
+                temp = Integral(toSum="x^p", a=self.a, b=self.b, N=self.N, exp=exp[i], coeff=coeff[i])
                 result += temp.integrate()
-                # Accounts for x's with coefficieants and exponents
-            elif '^' in i:
-                temp = Integral(toSum="x^p", coeff=int(i.split('x', 1)[0].strip()),
-                                exp=int(i.rsplit('^', 1)[1].strip()),
-                                a=a, b=b, N=N)
-                result += temp.integrate()
-            elif 'x' in i:
-                # Accounts for x's with coefficients and no exponents
-                try:
-                    temp = Integral(toSum="x^p", coeff=int(i.split('x', 1)[0].strip()), exp=1, a=a, b=b, N=N)
-                    result += temp.integrate()
-                # Accounts for x's with no coefficients and no exponents
-                except:
-                    temp = Integral(toSum="x^p", coeff=1, exp=1, a=a, b=b, N=N)
-                    result += temp.integrate()
-            # Accounts for Constants
             else:
-                result += int(i) * self.b
+                result += self.b * coeff[i]
+
+            print(result)
 
         print("The definite integral evaluates to: ", "%.4f" % result)
+        return result
 
     def getExpression(self):
 
@@ -99,39 +131,40 @@ class Integral:
         value2 = abs(((self.b - self.a) / self.N) * value)
 
         if self.toSum == "x^p" and self.coeff > 1:
-            # print("∫", self.coeff, "x ^", self.exp, "dx", " evaluated from ", int(self.a), " to ", int(self.b), " is: ",
-            #      "%.4f" % value2)
+            # print("∫", self.coeff, "x ^", self.exp, "dx", " evaluated from ", int(self.a), " to ", int(self.b),
+            # " is: ", "%.4f" % value2)
             return value2
         elif self.toSum == "x^p" and self.coeff <= 1:
             # print("∫", "x ^", self.exp, "dx", " evaluated from ", int(self.a), " to ", int(self.b), " is: ",
             #       "%.4f" % value2)
             return value2
         else:
-            # print("∫", self.toSum, "dx", " evaluated from ", int(self.a), " to ", int(self.b), " is: ", "%.4f" % value2)
+            # print("∫", self.toSum, "dx", " evaluated from ", int(self.a), " to ", int(self.b), " is: ",
+            # "%.4f" % value2)
             return value2
 
 
 # Keeps Program Running
-toQuit = "y"
-while toQuit == "y":
-    print("\nSING'S SIMPLE DEFINITE INTEGRAL CALCULATOR")
-    print("Please note that no coefficients or exponents are allowed on sin(x) or cos(x) just yet.")
-    print("Example Expression: 2x^4 + 5x^3 + 4x^2 + 7x + 8 + sin(x)")
-    print("Example Expression: sin(x) + 5")
-    try:
-        expression = str(input("\nPlease enter your expression: "))
-
-        a = int(input("Please enter your lower bound: "))
-        b = int(input("Please enter your upper bound: "))
-        N = int(input("Please enter your accuracy level (Iterations): "))
-
-        integral = Integral(polynomial=expression, a=a, b=b, N=N)
-        integral.integratePolynomial()
-
-        print("\n")
-
-    except:
-        print("There was an error with your input. Please try again.")
-        print("\n")
-
-    toQuit = str(input("Would you like to perform another calculation? (Type y to continue, anything else to quit): "))
+# toQuit = "y"
+# while toQuit == "y":
+#     print("\nSING'S SIMPLE DEFINITE INTEGRAL CALCULATOR")
+#     print("Please note that no coefficients or exponents are allowed on sin(x) or cos(x) just yet.")
+#     print("Example Expression: 2x^4 + 5x^3 + 4x^2 + 7x + 8 + sin(x)")
+#     print("Example Expression: sin(x) + 5")
+#     try:
+#         expression = str(input("\nPlease enter your expression: "))
+#
+#         a = int(input("Please enter your lower bound: "))
+#         b = int(input("Please enter your upper bound: "))
+#         N = int(input("Please enter your accuracy level (Iterations): "))
+#
+#         integral = Integral(polynomial=expression, a=a, b=b, N=N)
+#         integral.integratePolynomial()
+#
+#         print("\n")
+#
+#     except:
+#         print("There was an error with your input. Please try again.")
+#         print("\n")
+#
+#     toQuit = str(input("Would you like to perform another calculation? (Type y to continue, anything else to quit): "))
