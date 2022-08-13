@@ -130,18 +130,7 @@ class Integral:
 
         value2 = abs(((self.b - self.a) / self.N) * value)
 
-        if self.toSum == "x^p" and self.coeff > 1:
-            # print("∫", self.coeff, "x ^", self.exp, "dx", " evaluated from ", int(self.a), " to ", int(self.b),
-            # " is: ", "%.4f" % value2)
-            return value2
-        elif self.toSum == "x^p" and self.coeff <= 1:
-            # print("∫", "x ^", self.exp, "dx", " evaluated from ", int(self.a), " to ", int(self.b), " is: ",
-            #       "%.4f" % value2)
-            return value2
-        else:
-            # print("∫", self.toSum, "dx", " evaluated from ", int(self.a), " to ", int(self.b), " is: ",
-            # "%.4f" % value2)
-            return value2
+        return value2
 
 
 # Keeps Program Running

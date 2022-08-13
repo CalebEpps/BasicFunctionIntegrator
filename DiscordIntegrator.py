@@ -23,13 +23,9 @@ async def on_message(message):
         return
 
     if message.content.startswith('!integrate'):
-
         oritoIntegrate = message.content[10:]
-        toIntegrate = oritoIntegrate.replace("-", "+-")
-        toIntegrate = toIntegrate.replace(" ", "")
-        print(toIntegrate)
 
-        integral = Integral(polynomial=toIntegrate, a=0, b=5, N=5000)
+        integral = Integral(polynomial=oritoIntegrate, a=0, b=5, N=5000)
         solution = ("The integral " + oritoIntegrate + " evaluates to " + "%.4f" % integral.integratePolynomial())
         embed = discord.Embed(title='Solution',
                               description=solution, color=0xFF5733)
