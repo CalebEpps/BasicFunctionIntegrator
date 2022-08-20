@@ -1,3 +1,5 @@
+import re
+
 import discord
 import os
 from dotenv import load_dotenv
@@ -31,6 +33,13 @@ async def on_message(message):
                               description=solution, color=0xFF5733)
 
         await message.channel.send(embed=embed)
+
+
+def getA(command):
+    if 'a=' in command:
+        a = re.findall("a=\d")
+        print(a)
+
 
 
 client.run(TOKEN)

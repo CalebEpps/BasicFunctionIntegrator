@@ -17,6 +17,31 @@ class Integral:
         if toSum == " " and polynomial == " ":
             self.getExpression()
 
+    def trigFunctions(self, polynomial):
+        if 'sin' in polynomial:
+            getSin = re.findall("sin\(\dx\)", polynomial)
+            # tempSin = int(re.search("\d", getSin[0])[0])
+            # print(str(tempSin) + "x")
+            # print(getSin[0])
+            return 1
+
+        elif 'cos' in polynomial:
+            getCos = re.findall("cos\(\dx\)", polynomial)
+            # tempCos = int(re.search("\d", getCos[0])[0])
+            # print(str(tempCos) + "x")
+            # print(getCos[0])
+            return 2
+
+        elif 'tan' in polynomial:
+            getTan = re.findall("tan\(\dx\)", polynomial)
+            # tempTan = int(re.search("\d", getTan[0])[0])
+            # print(str(tempTan) + "x")
+            # print(getTan[0])
+            return 3
+        else:
+            return 0
+
+
     # Integrates a polynomial by separating terms and calculating integrals of each one before adding them together.
     def integratePolynomial(self):
         # Remove Spaces
@@ -24,6 +49,7 @@ class Integral:
 
         # Define Necessary Lists
         signs = []
+        trigFunctions = []
         coeff = []
         exp = []
 
@@ -32,16 +58,32 @@ class Integral:
             if re.match("[+\-*]", i):
                 signs.append(i)
 
+        print(trigFunctions)
+
         # Replace minus signs with 'plus minus'
         terms = terms.replace('-', "+-")
 
         # Finally split poly by plus sign
         polySplit = terms.split("+")
 
+        print(polySplit)
+        for i in polySplit:
+            trigFunctions.append(self.trigFunctions(i))
+            print(self.trigFunctions(i))
+
         # loop to gather all coefficients + exponents
         for i in range(len(polySplit)):
             try:
-                coeff.append(int(polySplit[i].split('x')[0].strip()))
+                if trigFunctions[i] != 0:
+                    toAppend = ""
+                    for c in polySplit[i].split("x")[0]:
+                        if c.isdigit():
+                            toAppend += c
+                            print("C: ", c)
+                            print("Post Append: ", str(toAppend))
+                    coeff.append(int(toAppend))
+                else:
+                    coeff.append(int(polySplit[i].split('x')[0].strip()))
             except:
                 # Uses error to determine there's no coefficient
                 coeff.append(1)
@@ -68,8 +110,15 @@ class Integral:
             print("Coefficient: ", coeff[i])
             # Accounts for sin(x) and cos(x)
             if exp[i] > 0:
-                temp = Integral(toSum="x^p", a=self.a, b=self.b, N=self.N, exp=exp[i], coeff=coeff[i])
-                result += temp.integrate()
+                if trigFunctions[i] == 0:
+                    temp = Integral(toSum="x^p", a=self.a, b=self.b, N=self.N, exp=exp[i], coeff=coeff[i])
+                    result += temp.integrate()
+                elif trigFunctions[i] == 1:
+                    temp = Integral(toSum="sin(x)", a=self.a, b=self.b, N=self.N, exp=exp[i], coeff=coeff[i])
+                    result += temp.integrate()
+                elif trigFunctions[i] == 2:
+                    temp = Integral(toSum="cos(x)", a=self.a, b=self.b, N=self.N, exp=exp[i], coeff=coeff[i])
+                    result += temp.integrate()
             else:
                 result += self.b * coeff[i]
 
@@ -93,9 +142,9 @@ class Integral:
     # Function that defines mathematical function
     def f(self, x):
         if self.toSum == "sin(x)":
-            return sin(x)
+            return (sin(self.coeff * x)) ** self.exp
         elif self.toSum == "cos(x)":
-            return cos(x)
+            return (cos(self.coeff * x)) ** self.exp
         elif self.toSum == "x^p":
 
             if self.coeff == 1:
@@ -134,26 +183,25 @@ class Integral:
 
 
 # Keeps Program Running
-# toQuit = "y"
-# while toQuit == "y":
-#     print("\nSING'S SIMPLE DEFINITE INTEGRAL CALCULATOR")
-#     print("Please note that no coefficients or exponents are allowed on sin(x) or cos(x) just yet.")
-#     print("Example Expression: 2x^4 + 5x^3 + 4x^2 + 7x + 8 + sin(x)")
-#     print("Example Expression: sin(x) + 5")
-#     try:
-#         expression = str(input("\nPlease enter your expression: "))
-#
-#         a = int(input("Please enter your lower bound: "))
-#         b = int(input("Please enter your upper bound: "))
-#         N = int(input("Please enter your accuracy level (Iterations): "))
-#
-#         integral = Integral(polynomial=expression, a=a, b=b, N=N)
-#         integral.integratePolynomial()
-#
-#         print("\n")
-#
-#     except:
-#         print("There was an error with your input. Please try again.")
-#         print("\n")
-#
-#     toQuit = str(input("Would you like to perform another calculation? (Type y to continue, anything else to quit): "))
+toQuit = "y"
+while toQuit == "y":
+     print("\nSING'S SIMPLE DEFINITE INTEGRAL CALCULATOR")
+     print("Please note that no coefficients or exponents are allowed on sin(x) or cos(x) just yet.")
+     print("Example Expression: 2x^4 + 5x^3 + 4x^2 + 7x + 8 + sin(x)")
+     print("Example Expression: sin(x) + 5")
+     try:
+         expression = str(input("\nPlease enter your expression: "))
+
+         a = int(input("Please enter your lower bound: "))
+         b = int(input("Please enter your upper bound: "))
+         N = int(input("Please enter your accuracy level (Iterations): "))
+         integral = Integral(polynomial=expression, a=a, b=b, N=N)
+         integral.integratePolynomial()
+
+         print("\n")
+
+     except:
+         print("There was an error with your input. Please try again.")
+         print("\n")
+
+     toQuit = str(input("Would you like to perform another calculation? (Type y to continue, anything else to quit): "))
